@@ -1,4 +1,4 @@
-#! /usr/bin/python2
+#! /usr/bin/python3
 
 import sys
 import re
@@ -18,10 +18,10 @@ class Matrice:
             self.nodesNumber = int(nodes_edges[0])
             self.edgesNumber = int(nodes_edges[1])
             for lineNo in range(self.edgesNumber):
-                nodes = re.findall(r'\d', f.next())
+                nodes = re.findall(r'\d', next(f))
                 src = int(nodes[0])
                 dest = int(nodes[1])
-                if self.dic_srcToDest.has_key(src):
+                if src in self.dic_srcToDest:
                     self.dic_srcToDest[src].append(dest)
                 else:
                     self.dic_srcToDest[src] = []
@@ -29,7 +29,7 @@ class Matrice:
         count = 0
         self.table_L.append(0)
         for i in range(self.nodesNumber):
-            if self.dic_srcToDest.has_key(i):
+            if i in self.dic_srcToDest:
                 value = self.dic_srcToDest[i]
                 partition = len(value)
                 for i in range(partition):
@@ -40,12 +40,12 @@ class Matrice:
 
 
     def printMatrice(self):
-        print "Nodes Number: %d" % self.nodesNumber
-        print "Edges Number: %d" % self.edgesNumber
-        print "Dictionary source to Destination: ", self.dic_srcToDest
-        print "Table C: ", self.table_C
-        print "Table L: ", self.table_L
-        print "Table I: ", self.table_I
+        print("Nodes Number: %d" % self.nodesNumber)
+        print("Edges Number: %d" % self.edgesNumber)
+        print("Dictionary source to Destination: " +str(self.dic_srcToDest))
+        print("Table C: "+str(self.table_C))
+        print("Table L: "+str(self.table_L))
+        print("Table I: "+str(self.table_I))
 
 
 m1 = Matrice(sys.argv[1])
