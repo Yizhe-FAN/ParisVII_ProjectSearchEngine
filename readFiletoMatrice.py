@@ -1,3 +1,6 @@
+#! /usr/bin/python2
+
+import sys
 import re
 
 
@@ -45,5 +48,5 @@ class Matrice:
         print "Table I: ", self.table_I
 
 
-m1 = Matrice('data/tp1-fig1.txt')
+m1 = Matrice(sys.argv[1])
 m1.printMatrice()
