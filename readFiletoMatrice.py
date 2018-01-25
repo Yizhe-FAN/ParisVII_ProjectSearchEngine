@@ -4,10 +4,9 @@ import sys
 import re
 
 
-class Matrice:
+class MatriceCLI:
     nodesNumber = 0
     edgesNumber = 0
-    dic_srcToDest = {}
     table_C = []
     table_L = []
     table_I = []
@@ -17,36 +16,40 @@ class Matrice:
             nodes_edges = re.findall(r'\d', f.readline())
             self.nodesNumber = int(nodes_edges[0])
             self.edgesNumber = int(nodes_edges[1])
-            for lineNo in range(self.edgesNumber):
-                nodes = re.findall(r'\d', next(f))
+            last_node = -1
+            count = 0
+            lineBegin = 0
+            line = f.readline()
+            while line:
+                nodes = re.findall(r'\d', line)
                 src = int(nodes[0])
                 dest = int(nodes[1])
-                if src in self.dic_srcToDest:
-                    self.dic_srcToDest[src].append(dest)
-                else:
-                    self.dic_srcToDest[src] = []
-                    self.dic_srcToDest[src].append(dest)
-        count = 0
-        self.table_L.append(0)
-        for i in range(self.nodesNumber):
-            if i in self.dic_srcToDest:
-                value = self.dic_srcToDest[i]
-                partition = len(value)
-                for i in range(partition):
-                    self.table_C.append(1.0/partition)
-                    count += 1
-                    self.table_I.append(value[i])
+                if last_node == -1:
+                    self.table_L.append(0)
+                elif src != last_node:
+                    partition = count - lineBegin
+                    for i in range(partition):
+                        self.table_C.append(1.0 / partition)
+                    self.table_L.append(count)
+                    lineBegin = count
+                self.table_I.append(dest)
+                count += 1
+                last_node = src
+                line = f.readline()
+            #write the last line of matrice into the table C and L
+            partition = count - lineBegin
+            for i in range(partition):
+                self.table_C.append(1.0 / partition)
             self.table_L.append(count)
 
 
-    def printMatrice(self):
+    def printMatriceInfo(self):
         print("Nodes Number: %d" % self.nodesNumber)
         print("Edges Number: %d" % self.edgesNumber)
-        print("Dictionary source to Destination: " +str(self.dic_srcToDest))
         print("Table C: "+str(self.table_C))
         print("Table L: "+str(self.table_L))
         print("Table I: "+str(self.table_I))
 
 
-m1 = Matrice(sys.argv[1])
-m1.printMatrice()
+m1 = MatriceCLI(sys.argv[1])
+m1.printMatriceInfo()
