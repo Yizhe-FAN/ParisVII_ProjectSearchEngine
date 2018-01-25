@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from numpy import *;
+from numpy import *
 
 def iterator_CLI(cli,table_v):
 	length = len(table_v)
@@ -20,7 +20,7 @@ table_v = [1/3,1/3,1/3]
 print(iterator_CLI(cli,table_v))
 
 
-def pagerank(d,e,cli,table_v):
+def pageRank(d,e,cli,table_v):
 	def converge(table_1,table_2):
 		flag = False
 		for i in range(0,len(table_1)):

@@ -1,6 +1,5 @@
 #! /usr/bin/python3
 
-import sys
 import re
 
 
@@ -12,34 +11,54 @@ class MatriceCLI:
     table_I = []
 
     def __init__(self, filePath):
+        self.table_L.append(0)
+        lastNode = 0
+        count = 0
+        nodeCount = 0
+        nodeBegin = 0
         with open(filePath) as f:
-            nodes_edges = re.findall(r'\d', f.readline())
-            self.nodesNumber = int(nodes_edges[0])
-            self.edgesNumber = int(nodes_edges[1])
-            last_node = -1
-            count = 0
-            lineBegin = 0
             line = f.readline()
             while line:
-                nodes = re.findall(r'\d', line)
-                src = int(nodes[0])
-                dest = int(nodes[1])
-                if last_node == -1:
-                    self.table_L.append(0)
-                elif src != last_node:
-                    partition = count - lineBegin
+                if re.search(r'#', line):
+                    if re.search(r'Nodes:.*Edges:',line):
+                        nodes_edges = re.findall(r'\d', line)
+                        self.nodesNumber = int(nodes_edges[0])
+                        self.edgesNumber = int(nodes_edges[1])
+                    line = f.readline()
+                    continue
+
+                edges = re.findall(r'\d', line)
+                src = int(edges[0])
+                dest = int(edges[1])
+
+                # finish reading the connections of a node and write them into C and L
+                if src != lastNode:
+                    nodeCount += 1
+                    partition = count - nodeBegin
                     for i in range(partition):
                         self.table_C.append(1.0 / partition)
                     self.table_L.append(count)
-                    lineBegin = count
+                    nodeBegin = count
+
+                    # if there are some nodes who have 0 connections
+                    if src != lastNode + 1:
+                        for i in range(src - lastNode - 1):
+                            self.table_L.append(count)
+
                 self.table_I.append(dest)
                 count += 1
-                last_node = src
+                lastNode = src
                 line = f.readline()
-            #write the last line of matrice into the table C and L
-            partition = count - lineBegin
-            for i in range(partition):
-                self.table_C.append(1.0 / partition)
+
+        # write the last node of the file into the table C and L
+        nodeCount += 1
+        partition = count - nodeBegin
+        for i in range(partition):
+            self.table_C.append(1.0 / partition)
+        self.table_L.append(count)
+
+        # write the last nodes who do not have connections into L
+        for i in range(self.nodesNumber - nodeCount):
             self.table_L.append(count)
 
 
@@ -51,5 +70,5 @@ class MatriceCLI:
         print("Table I: "+str(self.table_I))
 
 
-m1 = MatriceCLI(sys.argv[1])
-m1.printMatriceInfo()
+# test_m = MatriceCLI("data/tp1-n4e4.txt")
+# test_m.printMatriceInfo()
